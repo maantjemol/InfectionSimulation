@@ -1,2 +1,2 @@
 # InfectionStimulation
-a small p5.js sketch that stimulates a virus infection
+a small p5.js sketch that simulates a virus infection
