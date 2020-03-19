@@ -25,8 +25,8 @@ function setup() {
   var button = createButton("RESET")
   button.mousePressed(resetAll)
 
-  sliderNumberCircles = createSlider(0, 200, 40, 1);
-  sliderDiaCircles = createSlider(2, 100, 10, 1);
+  sliderNumberCircles = createSlider(0, 500, 40, 5);
+  sliderDiaCircles = createSlider(2, 75, 10, 1);
   sliderCuredTime = createSlider(0, 1000, 800, 1);
   sliderVelocity = createSlider(0, 10, 1, 0.1);
 
