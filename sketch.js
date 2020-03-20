@@ -7,6 +7,7 @@ let numb_was_infected = 0;
 let numb_circles = 80
 let textsize = 25
 let velocity = 1
+let timeSpeed = 1
 
 let sliderNumberCircles
 let sliderDiaCircles
@@ -29,22 +30,25 @@ function setup() {
   sliderDiaCircles = createSlider(2, 75, 10, 1);
   sliderCuredTime = createSlider(0, 1000, 800, 1);
   sliderVelocity = createSlider(0, 10, 1, 0.1);
+  sliderTimeSpeed = createSlider(0, 10, 1, 1);
 
   sliderNumberCircles.position(0, 430);
   sliderDiaCircles.position(0, 460);
   sliderCuredTime.position(0, 490);
   sliderVelocity.position(0, 520);
+  sliderTimeSpeed.position(0, 550);
 
   sliderNumberCircles.style('width', '200px');
   sliderDiaCircles.style('width', '200px');
   sliderCuredTime.style('width', '200px');
   sliderVelocity.style('width', '200px');
+  sliderTimeSpeed.style('width', '200px');
 }
 
 // function mouseDragged() {
 //   for (let i = 0; i < amountParticles; i++) {
 //     p[i]= new Particle(mouseX, mouseY, 3, 0, 3/speedParticles);
-//     for(let par of p) 
+//     for(let par of p)
 //       particles.push(par)
 //   }
 // }
@@ -61,33 +65,39 @@ function draw() {
   diaCircle = sliderDiaCircles.value()
   curedTime = sliderCuredTime.value()
   velocity = sliderVelocity.value()
-  
-  
-  
+  timeSpeed = sliderTimeSpeed.value()
+
+
   fill(255);
   noStroke()
   textFont('Roboto')
   textSize(16);
   text('Circles: ' + numb_circles, 490, 20);
-  
+
   fill(255);
   noStroke()
   textFont('Roboto')
   textSize(16);
   text('Curetime: ' + curedTime, 490, 60);
-  
+
   fill(255);
   noStroke()
   textFont('Roboto')
   textSize(16);
   text('Circle size: ' + diaCircle, 490, 40);
-  
+
   fill(255);
   noStroke()
   textFont('Roboto')
   textSize(16);
   text('Velocity: ' + velocity, 490, 80);
-  
+
+  fill(255);
+  noStroke()
+  textFont('Roboto')
+  textSize(16);
+  text('Warp speed: ' + timeSpeed, 490, 100);
+
   fill(255);
   noStroke()
   textFont('Roboto')
@@ -120,7 +130,7 @@ function draw() {
     if (b.was_infected) {
       numb_was_infected++
     }
-    //bounce 
+    //bounce
   }
   //print(numb_infected)
 }
@@ -128,7 +138,7 @@ function draw() {
 function resetAll() {
   circles = []
   for (let i = 0; i < numb_circles; i++)
-    circles[i] = new Circle(random(0 + diaCircle / 2, width - diaCircle / 2), random(0 + diaCircle / 2, height - diaCircle / 2), diaCircle, random(-1, 1) * velocity, random(-1, 1) * velocity, random(colors), i == 1, this.cured_time);
+    circles[i] = new Circle(random(0 + diaCircle / 2, width - diaCircle / 2), random(0 + diaCircle / 2, height - diaCircle / 2), diaCircle, random(-1, 1) * velocity, random(-1, 1) * velocity, random(colors), i == 1, curedTime);
 }
 
 class Circle {
@@ -147,13 +157,14 @@ class Circle {
     this.was_infected = false
     this.infected = _inf
     this.infected_time = 0
-    this.cured_time = 800
+    this.cured_time = _cureTime
   }
 
   move() {
     //movement particles
-    this.x = this.x + this.xv
-    this.y = this.y + this.yv
+    this.x = this.x + (this.xv  * timeSpeed)
+    this.y = this.y + (this.yv  * timeSpeed)
+    // print(timeSpeed)
 
     if (this.y < this.d / 2 || this.y > height - this.d / 2) {
       this.yv = this.yv * -1
@@ -166,11 +177,11 @@ class Circle {
     if (this.infected == true) {
       if (this.was_infected == false) {
         this.c = [255, 0, 0]
-        this.infected_time++
+        this.infected_time = this.infected_time + 1 * timeSpeed
       }
     }
 
-    if (this.infected_time == this.cured_time) {
+    if (this.infected_time >= this.cured_time) {
       this.c = [0, 255, 0]
       this.infected = false
       this.was_infected = true
