@@ -10,7 +10,7 @@ let circles = []
 let graphsRed = []
 let graphsGreen = []
 let curedTime = 800
-let colors = ['#0ddbff', '#40E9FF', '#F2F2F2', '#74C9F2', '#57A5FF']
+let colors = ['#0ddbff', '#40E9FF', '#74C9F2', '#57A5FF']
 let diaCircle = 10
 let numb_infected = 1;
 let numb_was_infected = 0;
@@ -20,11 +20,16 @@ let velocity = 1
 let timeSpeed = 1
 let graph_timer_red = 0
 let graph_timer_green = 0
+let deathPer = 3
+let alreadyDead = 0
+let showDeathPer = 0
 
 let sliderNumberCircles
 let sliderDiaCircles
 let sliderCuredTime
 let sliderVelocity
+let sliderTimeSpeed
+let sliderDeathPer
 
 // let p = []
 // let amountParticles = 5
@@ -32,7 +37,6 @@ let sliderVelocity
 
 function setup() {
   createCanvas(600, 400);
-  resetAll();
   // for (let i = 0; i < numb_circles; i++)
   //   circles[i] = new Circle(random(0 + diaCircle / 2, width - diaCircle / 2), random(0 + diaCircle / 2, height - diaCircle / 2), diaCircle, random(-1, 1), random(-1, 1), random(colors), i == 1);
   var button = createButton("RESET")
@@ -43,18 +47,22 @@ function setup() {
   sliderCuredTime = createSlider(0, 1000, 800, 1);
   sliderVelocity = createSlider(0, 10, 1, 0.1);
   sliderTimeSpeed = createSlider(0, 10, 1, 1);
-
+  sliderDeathPer = createSlider(0, 100, deathPer, 1);
+  
   sliderNumberCircles.position(0, 430);
   sliderDiaCircles.position(0, 460);
   sliderCuredTime.position(0, 490);
   sliderVelocity.position(0, 520);
-  sliderTimeSpeed.position(0, 550);
+  sliderTimeSpeed.position(0, 580);
+  sliderDeathPer.position(0, 550);
 
   sliderNumberCircles.style('width', '200px');
   sliderDiaCircles.style('width', '200px');
   sliderCuredTime.style('width', '200px');
   sliderVelocity.style('width', '200px');
   sliderTimeSpeed.style('width', '200px');
+  sliderDeathPer.style('width', '200px');
+  resetAll();
 }
 
 // function mouseDragged() {
@@ -78,6 +86,7 @@ function draw() {
   curedTime = sliderCuredTime.value()
   velocity = sliderVelocity.value()
   timeSpeed = sliderTimeSpeed.value()
+  showDeathPer = sliderDeathPer.value()
 
 
   fill(255);
@@ -109,6 +118,12 @@ function draw() {
   textFont('Roboto')
   textSize(16);
   text('Warp speed: ' + timeSpeed, 490, 100);
+  
+  fill(255);
+  noStroke()
+  textFont('Roboto')
+  textSize(16);
+  text('Death : ' + showDeathPer + "%", 490, 120);
 
   fill(255);
   noStroke()
@@ -123,6 +138,13 @@ function draw() {
   textSize(textsize);
   text('Cured: ' + numb_was_infected, 10, 60);
   numb_was_infected = 0
+  
+  fill(255);
+  noStroke()
+  textFont('Roboto')
+  textSize(textsize);
+  text('Dead: ' + alreadyDead, 10, 90);
+  alreadyDead = 0
 
   for (let b of graphsRed) {
     b.show();
@@ -151,6 +173,10 @@ function draw() {
 
     if (b.was_infected) {
       numb_was_infected++
+    }
+    
+    if(b.dead){
+      alreadyDead++
     }
   }
 
@@ -183,6 +209,7 @@ function draw() {
 }
 
 function resetAll() {
+  
   circles = []
   graphsRed = []
   graphsGreen = []
@@ -200,6 +227,7 @@ function resetAll() {
   graph_count_green = 0
   graphsRed = []
   graphsGreen = []
+  deathPer = sliderDeathPer.value()
 
   graphsRed[0] = new graphRed(200, 200, numb_infected * 20)
   for (let i = 0; i < numb_circles; i++)
@@ -227,13 +255,17 @@ class Circle {
     this.infected = _inf
     this.infected_time = 0
     this.cured_time = _cureTime
+    this.deathPercentage = random(0 , 100)
+    this.dead = false
   }
 
   move() {
     //movement particles
-    this.x = this.x + (this.xv * timeSpeed)
-    this.y = this.y + (this.yv * timeSpeed)
-    // print(timeSpeed)
+    //checking for death, if so don't move
+    if(this.dead == false){
+      this.x = this.x + (this.xv * timeSpeed)
+      this.y = this.y + (this.yv * timeSpeed)
+    }
 
     if (this.y < this.d / 2 || this.y > height - this.d / 2) {
       this.yv = this.yv * -1
@@ -249,12 +281,20 @@ class Circle {
         this.infected_time = this.infected_time + 1 * timeSpeed
       }
     }
-
-    if (this.infected_time >= this.cured_time) {
-      this.c = [0, 255, 0]
-      this.infected = false
-      this.was_infected = true
-    }
+      if (this.infected_time >= this.cured_time) {
+        if(this.deathPercentage < deathPer){
+          this.dead = true
+          this.infected = false
+          this.c = [0,0,255]
+          //print("DEAD!!!")
+          
+        }else{
+          this.c = [0, 255, 0]
+          this.infected = false
+          this.was_infected = true
+          this.dead = false
+        }
+      }
     //     if (dist(mouseX, mouseY, this.x, this.y) < 50) {
     //       if (this.d < this.max_d) {
     //         this.d = this.d + this.grow_speed
@@ -267,11 +307,20 @@ class Circle {
     //     }
   }
   show() {
-    strokeWeight(2)
-    stroke(this.c)
-    noFill()
-    rectMode(CENTER);
-    circle(this.x, this.y, this.d)
+    if(this.dead == false){
+      strokeWeight(2)
+      stroke(this.c)
+      noFill()
+      rectMode(CENTER);
+      circle(this.x, this.y, this.d)
+    }else{
+      strokeWeight(2)
+      stroke(255)
+      noFill()
+      rectMode(CENTER);
+      line(this.x, this.y, this.x+10, this.y+10)
+      line(this.x + 10, this.y, this.x, this.y + 10)
+    }
   }
 
   intersect(other) {
@@ -287,6 +336,8 @@ class Circle {
     }
   }
 }
+
+
 
 class graphRed {
   constructor(_x, _y, _height, _wasX, _wasHeight) {
@@ -310,6 +361,8 @@ class graphRed {
   }
 }
 
+
+
 class graphGreen {
   constructor(_x, _y, _height, _wasX, _wasHeight) {
     //values particles
@@ -323,6 +376,7 @@ class graphGreen {
   update() {
 
   }
+  
   show() {
     stroke(133, 255, 151, 255)
     strokeWeight(3)
