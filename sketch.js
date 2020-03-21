@@ -43,13 +43,13 @@ function setup() {
   sliderCuredTime = createSlider(0, 1000, 800, 1);
   sliderVelocity = createSlider(0, 10, 1, 0.1);
   sliderTimeSpeed = createSlider(0, 10, 1, 1);
-  
+
   sliderNumberCircles.position(0, 430);
   sliderDiaCircles.position(0, 460);
   sliderCuredTime.position(0, 490);
   sliderVelocity.position(0, 520);
   sliderTimeSpeed.position(0, 550);
-  
+
   sliderNumberCircles.style('width', '200px');
   sliderDiaCircles.style('width', '200px');
   sliderCuredTime.style('width', '200px');
@@ -78,61 +78,62 @@ function draw() {
   curedTime = sliderCuredTime.value()
   velocity = sliderVelocity.value()
   timeSpeed = sliderTimeSpeed.value()
-  
-  
+
+
   fill(255);
   noStroke()
   textFont('Roboto')
   textSize(16);
   text('Circles: ' + numb_circles, 490, 20);
-  
+
   fill(255);
   noStroke()
   textFont('Roboto')
   textSize(16);
   text('Curetime: ' + curedTime, 490, 60);
-  
+
   fill(255);
   noStroke()
   textFont('Roboto')
   textSize(16);
   text('Circle size: ' + diaCircle, 490, 40);
-  
+
   fill(255);
   noStroke()
   textFont('Roboto')
   textSize(16);
   text('Velocity: ' + velocity, 490, 80);
-  
+
   fill(255);
   noStroke()
   textFont('Roboto')
   textSize(16);
   text('Warp speed: ' + timeSpeed, 490, 100);
-  
+
+  fill(255);
+  noStroke()
+  textFont('Roboto')
+  textSize(textsize);
+  text('Infected: ' + numb_infected, 10, 30);
+  numb_infected = 0
+
   fill(255);
   noStroke()
   textFont('Roboto')
   textSize(textsize);
   text('Cured: ' + numb_was_infected, 10, 60);
   numb_was_infected = 0
-  
-  fill(255);
-  noStroke()
-  textFont('Roboto')
-  textSize(textsize);
-  text('Infected: ' + numb_infected, 10, 30);
-  
+
   for (let b of graphsRed) {
     b.show();
     b.update();
   }
-  
+
   for (let b of graphsGreen) {
     b.show();
     b.update();
   }
-  
+
   for (let b of circles) {
     b.show();
     b.move();
@@ -147,13 +148,14 @@ function draw() {
     if (b.infected) {
       numb_infected++
     }
+
     if (b.was_infected) {
       numb_was_infected++
     }
   }
-  
-  if(numb_infected != 0){
-    if(graph_timer_red >= round(10/timeSpeed)){
+
+  if (numb_infected != 0) {
+    if (graph_timer_red >= round(10 / timeSpeed)) {
       //print(numb_infected)
       graphsRed.push(new graphRed(graph_count_red, 400, numb_infected * 1, graph_was_x_red, graph_was_height_red))
       graph_count_red += 1
@@ -162,21 +164,22 @@ function draw() {
       graph_was_x_red = graph_count_red
       graph_was_height_red = numb_infected * 1
     }
-  if(numb_infected != 0){
-    if(graph_timer_green >= round(10/timeSpeed)){
-      //print(numb_infected)
-      graphsGreen.push(new graphGreen(graph_count_green, 400, numb_was_infected * 1, graph_was_x_green, graph_was_height_green))
-      graph_count_green += 1
-      graph_timer_green = 0
-      // print(graphsRed)
-      graph_was_x_green = graph_count_green
-      graph_was_height_green = numb_was_infected * 1
+
+
+    if (numb_infected != 0) {
+      if (graph_timer_green >= round(10 / timeSpeed)) {
+        //print(numb_infected)
+        graphsGreen.push(new graphGreen(graph_count_green, 400, numb_was_infected * 1, graph_was_x_green, graph_was_height_green))
+        graph_count_green += 1
+        graph_timer_green = 0
+        // print(graphsRed)
+        graph_was_x_green = graph_count_green
+        graph_was_height_green = numb_was_infected * 1
       }
     }
   }
   graph_timer_red++
   graph_timer_green++
-  numb_infected = 0
 }
 
 function resetAll() {
@@ -197,14 +200,14 @@ function resetAll() {
   graph_count_green = 0
   graphsRed = []
   graphsGreen = []
-  
+
   graphsRed[0] = new graphRed(200, 200, numb_infected * 20)
   for (let i = 0; i < numb_circles; i++)
-  
-  graphsGreen[0] = new graphGreen(200, 200, numb_infected * 20)
+
+    graphsGreen[0] = new graphGreen(200, 200, numb_infected * 20)
   for (let i = 0; i < numb_circles; i++)
-  
-  circles[i] = new Circle(random(0 + diaCircle / 2, width - diaCircle / 2), random(0 + diaCircle / 2, height - diaCircle / 2), diaCircle, random(-1, 1) * velocity, random(-1, 1) * velocity, random(colors), i == 1, curedTime);
+
+    circles[i] = new Circle(random(0 + diaCircle / 2, width - diaCircle / 2), random(0 + diaCircle / 2, height - diaCircle / 2), diaCircle, random(-1, 1) * velocity, random(-1, 1) * velocity, random(colors), i == 1, curedTime);
 }
 
 class Circle {
@@ -228,8 +231,8 @@ class Circle {
 
   move() {
     //movement particles
-    this.x = this.x + (this.xv  * timeSpeed)
-    this.y = this.y + (this.yv  * timeSpeed)
+    this.x = this.x + (this.xv * timeSpeed)
+    this.y = this.y + (this.yv * timeSpeed)
     // print(timeSpeed)
 
     if (this.y < this.d / 2 || this.y > height - this.d / 2) {
@@ -285,7 +288,7 @@ class Circle {
   }
 }
 
-class graphRed{
+class graphRed {
   constructor(_x, _y, _height, _wasX, _wasHeight) {
     //values particles
     this.x = _x;
@@ -296,10 +299,10 @@ class graphRed{
   }
 
   update() {
-    
+
   }
-  show() {  
-    stroke(255,99,97)
+  show() {
+    stroke(255, 99, 97)
     strokeWeight(3)
     //fill(0, 255, 0)
     rectMode(CENTER);
@@ -307,7 +310,7 @@ class graphRed{
   }
 }
 
-class graphGreen{
+class graphGreen {
   constructor(_x, _y, _height, _wasX, _wasHeight) {
     //values particles
     this.x = _x;
@@ -318,10 +321,10 @@ class graphGreen{
   }
 
   update() {
-    
+
   }
-  show() {  
-    stroke(133,255,151,255)
+  show() {
+    stroke(133, 255, 151, 255)
     strokeWeight(3)
     rectMode(CENTER);
     point(this.x, this.y - this.wasHeight)
